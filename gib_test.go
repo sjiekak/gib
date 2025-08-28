@@ -175,6 +175,13 @@ func TestDataset(t *testing.T) {
 	}
 }
 
+func TestNewDefaultScorer(t *testing.T) {
+	_, err := NewDefaultScorer()
+	if err != nil {
+		t.Fatal("failed to create new score function with error :", err)
+	}
+}
+
 func TestScorer(t *testing.T) {
 	testCases := []string{
 		"lakdfqtajaklj",

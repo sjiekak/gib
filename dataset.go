@@ -6,6 +6,7 @@ package gib
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 )
@@ -72,7 +73,14 @@ func loadDataset(filename string) (NGramScores, error) {
 	}
 	defer f.Close()
 
-	data, _ := ioutil.ReadAll(f)
+	return readDataset(f)
+}
+
+func readDataset(r io.ReadWriter) (NGramScores, error) {
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
 	var ngrams NGramScores
 	err = json.Unmarshal(data, &ngrams)
 	if err != nil {

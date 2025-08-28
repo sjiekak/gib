@@ -6,6 +6,8 @@
 package gib
 
 import (
+	"bytes"
+	_ "embed"
 	"errors"
 	"math"
 	"strings"
@@ -19,6 +21,9 @@ const (
 	// Dataset is the file path to the ngram dataset collected from a corpora.
 	Dataset = "./data/ngram.json"
 )
+
+//go:embed data/ngram.json
+var defaultEnglishNGram string
 
 // Options provides different option to create a new scorer.
 type Options struct {
@@ -192,6 +197,13 @@ func TFIDFScoreFunction(ngramFreq NGramScores, n int, lenThres float64,
 	return score
 }
 
+// NewDefaultScorer creates the default scoring function based on
+// supports American English words and will generate false positives
+// due to the problem domain
+func NewDefaultScorer() (func(string) (bool, error), error) {
+	return NewScorer(nil)
+}
+
 // NewScorer creates a new scoring function
 func NewScorer(opts *Options) (func(string) (bool, error), error) {
 
@@ -205,7 +217,7 @@ func NewScorer(opts *Options) (func(string) (bool, error), error) {
 				err.Error())
 		}
 	} else {
-		ngramFreq, err = loadDataset(Dataset)
+		ngramFreq, err = readDataset(bytes.NewBufferString(defaultEnglishNGram))
 		if err != nil {
 			return nil, errors.New("failed to load dataset with error " +
 				err.Error())
