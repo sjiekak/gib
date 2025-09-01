@@ -296,7 +296,7 @@ func TestScoreFunctionOnLabeledData(t *testing.T) {
 func TestScoreFunctionOnRealData(t *testing.T) {
 
 	// all the test cases are real string read from /usr/share/dict/words
-	testCases, err := readLines("/usr/share/dict/words")
+	testCases, err := readLines("testdata/american_english.txt")
 	if err != nil {
 		t.Fatal("failed to read test cases with error :", err)
 	}
