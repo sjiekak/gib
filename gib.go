@@ -59,6 +59,19 @@ func ngramsFromString(s string, n int) []string {
 	return ngrams
 }
 
+// countNgramsFromString counts n-grams of length n in a given string s.
+func countNgramsFromString(s string, n int) (map[string]int, int) {
+	numNgrams := len(s) - n + 1
+	ngramCounts := make(map[string]int, numNgrams)
+
+	for i := 0; i < numNgrams; i++ {
+		ngram := s[i : i+n]
+		ngramCounts[ngram]++
+	}
+
+	return ngramCounts, numNgrams
+}
+
 // TFIDFScoreFunction generates a function that computes a score given a string.
 func TFIDFScoreFunction(ngramFreq NGramScores, n int, lenThres float64,
 	lenPenalty float64, repPenalty float64) func(string) float64 {
@@ -79,17 +92,11 @@ func TFIDFScoreFunction(ngramFreq NGramScores, n int, lenThres float64,
 	// finalScore = (ngramScoreSum + lenPenalty) / (1 + numNGrams)
 
 	maxFreq := highestFreq(ngramFreq)
-	ngramLen := n
 
 	score := func(s string) float64 {
 		s = sanitize(s)
-		ngramsInStr := ngramsFromString(s, ngramLen)
-		ngramCounts := make(map[string]int)
+		ngramCounts, numNGrams := countNgramsFromString(s, n)
 
-		for _, ngram := range ngramsInStr {
-			ngramCounts[ngram]++
-		}
-		numNGrams := len(ngramsInStr)
 		lengthPenalty := math.Pow(math.Max(0., float64(numNGrams)-lenThres),
 			lenPenalty)
 		// compute the scores

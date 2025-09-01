@@ -38,11 +38,12 @@ var simplePatterns = []string{
 	"|[asdfjkl]{8}",
 }
 
+var regLetter = regexp.MustCompile("[^a-zA-Z]+")
+
 func sanitize(s string) string {
 	// Make a Regex to say we only want letters and numbers.
 	s = strings.ToLower(s)
-	reg := regexp.MustCompile("[^a-zA-Z]+")
-	processedString := reg.ReplaceAllString(s, "")
+	processedString := regLetter.ReplaceAllString(s, "")
 	return processedString
 }
 
